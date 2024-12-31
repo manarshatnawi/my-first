@@ -1,0 +1,8 @@
+#Project Idea : The project is a Secret Code Breaker game, where the player tries to guess a randomly generated 4-digit code within a limited number of attempts. The game provides feedback on the number of correct digits and correct positions in each guess. Key features of the project include:
+#• A randomly generated 4-digit code (digits between 1 and 9). • Player input validation to ensure proper guesses.
+#• Feedback after each guess: the number of digits guessed correctly and how many are in the correct positions.
+#• A high score system stored in a file, tracking the number of remaining guesses when the player successfully cracks the code.
+#• The game ends when the player either guesses the code or runs out of attempts. This project combines logic, randomness, file handling, and user interaction in Python.
+#Name student1 : manar shatnawi , student number : 202210366
+#Name sudent2 : yara khanfar , student number : 202220702
+#Team code : H 
