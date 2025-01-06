@@ -4,20 +4,23 @@ Name sudent2 : yara khanfar , student number : 202220702
 Team code : H                                                                                                                           
 
 step 2 : 
-Welcome to the Secret Code Breaker Game!
-Hello yara! Let's start the game.
+The dataset you have described contains several columns related to a guessing game where players try to break a secret code. Here's an explanation of each column:
 
-You have 3 attempts left.
-Feedback: 0 correct position(s), 2 correct digit(s) in wrong position(s)
+secret_code: This column represents the secret code that the player needs to guess. The code is typically hidden from the player, and their objective is to correctly guess it through a series of attempts.
 
-You have 2 attempts left.
-Feedback: 1 correct position(s), 2 correct digit(s) in wrong position(s)
+guess: This column contains the player's guess for the secret code. It reflects the code they attempted to match with the secret one.
 
-You have 1 attempts left.
-Feedback: 0 correct position(s), 3 correct digit(s) in wrong position(s)
-No description has been provided for this image
-Sorry! You've run out of attempts. The correct code was: 4518
+guesses_left: This column shows the number of guesses the player has left after making a specific guess. It indicates how many attempts the player can still make before running out of guesses.
+
+success: This column indicates whether the player successfully guessed the secret code ("Yes" or "No"). If the player correctly guesses the code, this will be marked as "Yes," otherwise it will be marked as "No."
+
+player_name: This column includes the name of the player who is participating in the game.
+
+
+
 step 3 : 
+
+
 The provided code implements a simple console-based game called "Secret Code Breaker." The objective of the game is for the player to guess a randomly generated 4-digit code, with feedback provided after each guess. Below is a detailed explanation of the code:
 
 ### Imports
