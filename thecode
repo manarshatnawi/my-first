@@ -2,119 +2,114 @@ import pandas as pd
 import random
 import matplotlib.pyplot as plt
 
-# Function to generate a random 4-digit code
-def generate_code():
-    return [random.randint(1, 6) for _ in range(4)]
+class SecretCodeBreaker:
+    def _init_(self):
+        self.code = []    
+        self.attempts_left = 3  
+        self.player_name = ""  
+        self.correct_digits_progress = [] 
 
-# Function to validate the player's guess
-def validate_guess(guess):
-    return len(guess) == 4 and all(digit.isdigit() and 1 <= int(digit) <= 6 for digit in guess)
+    def generate_code(self):
+        self.code = [random.randint(1, 9) for _ in range(4)]
 
-# Function to give feedback on the guess
-def get_feedback(code, guess):
-    correct_position = sum(1 for i in range(4) if code[i] == guess[i])
-    correct_digit = sum(min(code.count(digit), guess.count(digit)) for digit in set(guess))
-    return correct_position, correct_digit - correct_position
+    @staticmethod
+    def validate_guess(guess):
+        return len(guess) == 4 and all(digit.isdigit() and 1 <= int(digit) <= 9 for digit in guess)
 
-# Function to read high scores from the file
-def read_high_scores():
-    try:
-        df = pd.read_csv('high_scores.csv')
-        print("High scores loaded successfully!")
-        return df
-    except FileNotFoundError:
-        print("No previous high scores found. Starting a new high score list.")
-        return pd.DataFrame(columns=["Player", "Remaining Guesses"])
-    except Exception as e:
-        print(f"Error reading high scores: {e}")
-        return pd.DataFrame(columns=["Player", "Remaining Guesses"])
+    def get_feedback(self, guess):
+        correct_position = sum(1 for i in range(4) if self.code[i] == guess[i])
+        correct_digit = sum(min(self.code.count(digit), guess.count(digit)) for digit in set(guess))
+        return correct_position, correct_digit - correct_position
 
-# Function to save high scores to the file
-def save_high_scores(df):
-    try:
-        df.to_csv('high_scores.csv', index=False)
-        print("High scores saved successfully!")
-    except Exception as e:
-        print(f"Error saving high scores: {e}")
+    @staticmethod
+    def read_high_scores():
+        try:
+            df = pd.read_csv('high_scores.csv')
+            print("High scores loaded successfully!")
+            return df
+        except FileNotFoundError:
+            print("No previous high scores found. Starting a new high score list.")
+            return pd.DataFrame(columns=["Player", "Remaining Guesses"])
+        except Exception as e:
+            print(f"Error reading high scores: {e}")
+            return pd.DataFrame(columns=["Player", "Remaining Guesses"])
 
-# Function to plot the progress of guesses
-def plot_progress(guesses_data):
-    if not guesses_data:
-        print("No progress data to plot.")
-        return
-    plt.plot(range(1, len(guesses_data) + 1), guesses_data, marker='o', linestyle='-', color='b')
-    plt.title('Progress of Correct Digits in Each Attempt')
-    plt.xlabel('Attempt Number')
-    plt.ylabel('Correct Digits')
-    plt.grid(True)
-    plt.show()
+    @staticmethod
+    def save_high_scores(df):
+        try:
+            df.to_csv('high_scores.csv', index=False)
+            print("High scores saved successfully!")
+        except Exception as e:
+            print(f"Error saving high scores: {e}")
 
-# Main game function
-def play_game():
-    # Generate random code
-    code = generate_code()
-    attempts_left = 3  # Number of attempts allowed
-    player_name = input("Enter your name: ").strip()
-    correct_digits_progress = []  # Track correct digits over each guess
+    def plot_progress(self):
+        if not self.correct_digits_progress:
+            print("No progress data to plot.")
+            return
+        plt.plot(range(1, len(self.correct_digits_progress) + 1), self.correct_digits_progress, marker='o', linestyle='-', color='b')
+        plt.title('Progress of Correct Digits in Each Attempt')
+        plt.xlabel('Attempt Number')
+        plt.ylabel('Correct Digits')
+        plt.grid(True)
+        plt.show()
 
-    print(f"Hello {player_name}! Let's start the game.")
+    def play_game(self):
+        self.generate_code()
+        self.player_name = input("Enter your name: ").strip()
 
-    while attempts_left > 0:
-        print(f"\nYou have {attempts_left} attempts left.")
-        guess = input("Enter your guess (4 digits between 1 and 6): ").strip()
+        print(f"Hello {self.player_name}! Let's start the game.")
 
-        if not validate_guess(guess):
-            print("Invalid guess. Please enter 4 digits between 1 and 9.")
-            continue
+        while self.attempts_left > 0:
+            print(f"\nYou have {self.attempts_left} attempts left.")
+            guess = input("Enter your guess (4 digits between 1 and 9): ").strip()
 
-        guess = [int(digit) for digit in guess]
-        correct_position, correct_digit = get_feedback(code, guess)
-        correct_digits_progress.append(correct_position)
+            if not self.validate_guess(guess):
+                print("Invalid guess. Please enter 4 digits between 1 and 9.")
+                continue
 
-        print(f"Feedback: {correct_position} correct position(s), {correct_digit} correct digit(s) in wrong position(s)")
+            guess = [int(digit) for digit in guess]
+            correct_position, correct_digit = self.get_feedback(guess)
+            self.correct_digits_progress.append(correct_position)
+
+            print(f"Feedback: {correct_position} correct position(s), {correct_digit} correct digit(s) in wrong position(s)")
+
+            if correct_position == 4:
+                print("Congratulations! You've cracked the code!")
+                break
+
+            self.attempts_left -= 1
+
+        self.plot_progress()
 
         if correct_position == 4:
-            print("Congratulations! You've cracked the code!")
-            break
-
-        attempts_left -= 1
-
-    # Plot progress
-    plot_progress(correct_digits_progress)
-
-    # Save high scores if the player won
-    if correct_position == 4:
-        high_scores = read_high_scores()
-        new_entry = pd.DataFrame([{"Player": player_name, "Remaining Guesses": attempts_left}])
-        high_scores = pd.concat([high_scores, new_entry], ignore_index=True)
-        save_high_scores(high_scores)
-        print(f"Your high score has been saved with {attempts_left} remaining guesses.")
-    else:
-        print(f"Sorry! You've run out of attempts. The correct code was: {''.join(map(str, code))}")
-
-# Function to display high scores
-def show_high_scores():
-    high_scores = read_high_scores()
-    if not high_scores.empty:
-        print("\nHigh Scores:")
-        print(high_scores.sort_values(by="Remaining Guesses", ascending=False).to_string(index=False))
-    else:
-        print("No high scores available.")
+            high_scores = self.read_high_scores()
+            new_entry = pd.DataFrame([{"Player": self.player_name, "Remaining Guesses": self.attempts_left}])
+            high_scores = pd.concat([high_scores, new_entry], ignore_index=True)
+            self.save_high_scores(high_scores)
+            print(f"Your high score has been saved with {self.attempts_left} remaining guesses.")
+        else:
+            print(f"Sorry! You've run out of attempts. The correct code was: {''.join(map(str, self.code))}")
 
 # Main program loop
 def main():
+    game = SecretCodeBreaker()
     print("Welcome to the Secret Code Breaker Game!")
     while True:
         choice = input("\nChoose an option:\n1. Play Game\n2. Show High Scores\n3. Exit\n> ").strip()
         if choice == '1':
-            play_game()
+            game.play_game()
         elif choice == '2':
-            show_high_scores()
+            high_scores = game.read_high_scores()
+            if not high_scores.empty:
+                print("\nHigh Scores:")
+                print(high_scores.sort_values(by="Remaining Guesses", ascending=False).to_string(index=False))
+            else:
+                print("No high scores available.")
         elif choice == '3':
             print("Thanks for playing! Goodbye!")
             break
         else:
             print("Invalid choice. Please try again.")
 
-if _name_ == "_main_":
+if _name_ =="_main_":
     main()
